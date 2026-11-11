@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Aulia ❤️</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;overflow:hidden;background:#05030a;color:white;
+ font-family:Georgia,serif;
+}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.ui{
+ position:absolute;inset:0;pointer-events:none;
+ display:flex;flex-direction:column;
+ align-items:center;justify-content:space-between;
+ text-align:center;padding:30px 15px 25px;
+}
+.kicker{
+ font:10px Arial;letter-spacing:4px;color:#e9b8ff;
+}
+h1{
+ font-size:clamp(30px,7vw,55px);
+ font-weight:normal;letter-spacing:5px;
+ color:#ffd5ee;text-shadow:0 0 25px #ff72cf;
+ margin:12px 0;
+}
+.sub{font:11px Arial;letter-spacing:3px;color:#e5c4ee}
+.message{
+ font-size:clamp(16px,3.5vw,23px);
+ line-height:1.6;max-width:650px;
+ color:#fff0f8;text-shadow:0 0 20px #ff8bc8;
+}
+.message em{color:#ffadd4}
+.note{
+ font:10px Arial;letter-spacing:2px;
+ color:#c7a5d7;margin-top:12px;
+}
+.controls{
+ position:absolute;bottom:90px;left:50%;
+ transform:translateX(-50%);
+ display:flex;gap:10px;
+}
+button{
+ border:1px solid #e3a3ee88;
+ background:#28142f;color:#ffeafa;
+ border-radius:30px;padding:12px 18px;
+ cursor:pointer;letter-spacing:1px;
+}
+button:hover{background:#713c77}
+footer{
+ font:9px Arial;letter-spacing:3px;color:#b99abf;
+}
+</style>
+</head>
+<body>
+
+<canvas id="art"></canvas>
+
+<div class="ui">
+ <header>
+  <div class="kicker">A THOUSAND LITTLE STARS</div>
+  <h1>Untuk Aulia</h1>
+  <div class="sub">PEREMPUAN PALING CANTIK DI INDONESIA ♡</div>
+ </header>
+
+ <section>
+  <div class="message" id="message">
+   "Auliaaaa, maafin aku ya sayang.<br>
+   Aku mungkin belum sempurna, tapi aku selalu mau
+   belajar jadi lebih baik buat kamu.
+   <em>Kamu tetap perempuan paling cantik di duniaku.</em>"
+  </div>
+  <div class="note">SETIAP PARTIKEL MEMBAWA SATU RASA SAYANG</div>
+ </section>
+
+ <footer>MADE WITH LOVE · JUST FOR AULIA</footer>
+</div>
+
+<div class="controls">
+ <button onclick="mode='gather'">Gather ✨</button>
+ <button onclick="mode='flow'">Let it flow 💜</button>
+</div>
+
+<script>
+const canvas=document.getElementById('art');
+const ctx=canvas.getContext('2d');
+
+let w,h,particles=[],stars=[],targets=[];
+let mode='gather',tick=0;
+
+const rand=(a,b)=>Math.random()*(b-a)+a;
+
+// MEMBUAT SILUET PASANGAN DAN BUNGA
+function makeShape(){
+ const c=document.createElement('canvas');
+ c.width=800;c.height=620;
+ const g=c.getContext('2d');
+
+ g.fillStyle='white';
+ g.lineCap='round';
+ g.lineJoin='round';
+
+ // COWOK
+ g.beginPath();
+ g.arc(255,155,43,0,Math.PI*2);
+ g.fill();
+
+ // Rambut
+ g.beginPath();
+ g.moveTo(214,153);
+ g.quadraticCurveTo(207,103,258,106);
+ g.quadraticCurveTo(303,108,299,153);
+ g.closePath();
+ g.fill();
+
+ // Badan
+ g.beginPath();
+ g.moveTo(226,203);
+ g.quadraticCurveTo(255,188,285,204);
+ g.lineTo(323,337);
+ g.lineTo(299,354);
+ g.lineTo(211,354);
+ g.closePath();
+ g.fill();
+
+ // Kaki
+ g.fillRect(220,338,34,155);
+ g.fillRect(269,338,34,155);
+ g.beginPath();
+ g.ellipse(230,497,31,10,0,0,7);
+ g.ellipse(289,497,31,10,0,0,7);
+ g.fill();
+
+ // Tangan cowok memberikan bunga
+ g.strokeStyle='white';
+ g.lineWidth=23;
+ g.beginPath();
+ g.moveTo(285,222);
+ g.quadraticCurveTo(344,256,408,249);
+ g.stroke();
+
+ // CEWEK
+ g.beginPath();
+ g.arc(560,153,41,0,Math.PI*2);
+ g.fill();
+
+ // Rambut panjang
+ g.beginPath();
+ g.moveTo(523,140);
+ g.quadraticCurveTo(510,92,558,99);
+ g.quadraticCurveTo(610,96,605,153);
+ g.quadraticCurveTo(620,225,588,285);
+ g.lineTo(576,208);
+ g.lineTo(535,269);
+ g.closePath();
+ g.fill();
+
+ // Gaun
+ g.beginPath();
+ g.moveTo(535,197);
+ g.quadraticCurveTo(559,211,584,197);
+ g.quadraticCurveTo(617,227,628,303);
+ g.quadraticCurveTo(650,384,685,476);
+ g.quadraticCurveTo(564,520,439,476);
+ g.quadraticCurveTo(482,389,493,304);
+ g.closePath();
+ g.fill();
+
+ // Tangan cewek menerima bunga
+ g.lineWidth=20;
+ g.beginPath();
+ g.moveTo(523,225);
+ g.quadraticCurveTo(490,250,466,271);
+ g.stroke();
+
+ // Bunga mawar
+ g.strokeStyle='white';
+ g.lineWidth=6;
+ g.beginPath();
+ g.moveTo(450,260);
+ g.quadraticCurveTo(466,296,482,331);
+ g.stroke();
+
+ g.fillStyle='white';
+ g.beginPath();
+ g.arc(448,239,17,0,Math.PI*2);
+ g.arc(435,233,12,0,Math.PI*2);
+ g.arc(460,231,12,0,Math.PI*2);
+ g.arc(449,220,12,0,Math.PI*2);
+ g.arc(449,246,12,0,Math.PI*2);
+ g.fill();
+
+ // Hati
+ g.beginPath();
+ g.moveTo(449,174);
+ g.bezierCurveTo(424,153,409,180,449,208);
+ g.bezierCurveTo(489,180,474,153,449,174);
+ g.fill();
+
+ const data=g.getImageData(0,0,800,620).data;
+ const pts=[];
+
+ for(let y=0;y<620;y+=2){
+  for(let x=0;x<800;x+=2){
+   if(data[(y*800+x)*4+3]>100){
+    pts.push({x,y});
+   }
+  }
+ }
+ return pts;
+}
+
+const shape=makeShape();
+
+function resize(){
+ w=innerWidth;
+ h=innerHeight;
+
+ const dpr=Math.min(devicePixelRatio||1,2);
+ canvas.width=w*dpr;
+ canvas.height=h*dpr;
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+
+ stars=Array.from({length:180},()=>({
+  x:rand(0,w),y:rand(0,h),
+  r:rand(.3,1.2),a:rand(.2,.7),
+  phase:rand(0,6.28)
+ }));
+
+ const scale=Math.min(w/850,h/680)*.91;
+ const ox=(w-800*scale)/2;
+ const oy=(h-620*scale)/2+5;
+
+ targets=shape.map(p=>({
+  x:ox+p.x*scale,
+  y:oy+p.y*scale
+ }));
+
+ const count=Math.min(8500,Math.max(4200,targets.length));
+
+ particles=Array.from({length:count},(_,i)=>{
+  const t=targets[i%targets.length];
+  return {
+   x:rand(0,w),y:rand(0,h),
+   tx:t.x,ty:t.y,
+   vx:0,vy:0,
+   r:rand(.5,1.4),
+   alpha:rand(.4,1),
+   phase:rand(0,6.28),
+   hue:rand(275,330)
+  };
+ });
+}
+
+function animate(){
+ tick++;
+
+ // Jejak cahaya
+ ctx.fillStyle='rgba(5,3,10,.23)';
+ ctx.fillRect(0,0,w,h);
+
+ // Bintang latar
+ for(const s of stars){
+  s.phase+=.02;
+  ctx.globalAlpha=s.a*(.6+.4*Math.sin(s.phase));
+  ctx.fillStyle='#e9d5ff';
+  ctx.beginPath();
+  ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+  ctx.fill();
+ }
+ ctx.globalAlpha=1;
+
+ // Partikel hidup dan bergerak
+ for(const p of particles){
+
+  const t=tick*.018+p.phase;
+  const orbit=mode==='gather'?5:35;
+
+  const tx=p.tx+Math.cos(t)*orbit;
+  const ty=p.ty+Math.sin(t*1.13)*orbit;
+
+  const dx=tx-p.x;
+  const dy=ty-p.y;
+
+  // Gerakan berputar
+  const swirl=mode==='gather'?.10:.24;
+
+  p.vx=(p.vx+dx*.026-dy*swirl*.035)*.86;
+  p.vy=(p.vy+dy*.026+dx*swirl*.035)*.86;
+
+  p.x+=p.vx;
+  p.y+=p.vy;
+
+  const tw=.48+.52*Math.sin(p.phase+tick*.075);
+
+  ctx.globalAlpha=p.alpha*tw;
+  ctx.fillStyle=`hsl(${p.hue},90%,${68+tw*17}%)`;
+  ctx.shadowBlur=10;
+  ctx.shadowColor='#e9a5ff';
+
+  ctx.beginPath();
+  ctx.moveTo(p.x-p.vx*2,p.y-p.vy*2);
+  ctx.lineTo(p.x,p.y);
+  ctx.lineWidth=1.5;
+  ctx.strokeStyle=ctx.fillStyle;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+  ctx.fill();
+ }
+
+ ctx.globalAlpha=1;
+ ctx.shadowBlur=0;
+
+ requestAnimationFrame(animate);
+}
+
+resize();
+animate();
+window.addEventListener('resize',resize);
+</script>
+</body>
+</html>
